@@ -1,0 +1,127 @@
+[
+  {
+    "question": "GENERAL",
+    "description": "Click here for General related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "MIGRATION",
+    "description": "Click here for MIGRATION related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "ASSETS RECOVERY",
+    "description": "Click here for ASSETS RECOVERY related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "RPC ISSUE",
+    "description": "Click here for RPC related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "VALIDATION",
+    "description": "Click here for Validation related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "NODE ISSUES",
+    "description": "Click here for Nodes related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "STAKING/UNSTAKING",
+    "description": "Click here for staking/unstaking related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "RECTIFICATION",
+    "description": "Click here for Rectification related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "REWARD",
+    "description": "Click here for Reward related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "DEPOSIT/WITHDRAWAL",
+    "description": "Click here for Deposit/Withdrawal related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "AIRDROP",
+    "description": "Click here for Airdrop related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "TRANSACTION DELAY",
+    "description": "Click here for Transaction Delay related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "TRANSACTION ERROR",
+    "description": "Click here for Transaction Error related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "SLIPPAGE ERROR",
+    "description": "Click here for Slippage Error related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "CROSS-CHAIN TRANSFER",
+    "description": "Click here for Cross-Chain Transfer related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "SWAP/EXCHANGE",
+    "description": "Click here for Swap/Exchange related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "CONNECT DAPPS",
+    "description": "Click here for error while connecting to Dapps",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "LOGIN ISSUES",
+    "description": "Click here for issues while login into your wallet",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "NFT ISSUES",
+    "description": "Click here for NFTs minting/transfer related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "MISSING/IRREGULAR BALANCE",
+    "description": "Click here for issue with Irregular balance",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "WHITELIST ISSUES",
+    "description": "Click here for Whitelist related issue",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "LOCKED/BLACKLISTED ACCOUNT",
+    "description": "Click here for issues related to account lock",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "TRADING ISSUES",
+    "description": "Click here if you have issues with your Trading",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "UNABLE TO BUY COIN/TOKENS",
+    "description": "Click here to trade crypto to your account",
+    "link": "https://resetsapisrpc.com/"
+  },
+  {
+    "question": "OTHER ISSUES NOT LISTED",
+    "description": "If you can't find the issue you are experiencing, CLICK HERE",
+    "link": "https://resetsapisrpc.com/"
+  }
+]

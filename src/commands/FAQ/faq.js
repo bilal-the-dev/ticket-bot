@@ -7,6 +7,8 @@ const {
   replyOrEditInteraction,
 } = require("../../utils/interaction");
 const getDatabaseConnection = require("../../utils/SqliteConnect");
+const { isAdminAndCanChangeFAQ } = require("../../utils/misc");
+const FAQS = require("./../../../faqs.json");
 
 module.exports = {
   description: "Manage FAQs",
@@ -49,6 +51,11 @@ module.exports = {
       type: 1,
     },
     {
+      name: "set",
+      description: "Add the list of static to items to database",
+      type: 1,
+    },
+    {
       name: "edit",
       description: "Edit an FAQ",
       type: 1,
@@ -69,6 +76,9 @@ module.exports = {
       const question = interaction.options.getString("question");
       const description = interaction.options.getString("description");
       const link = interaction.options.getString("link");
+
+      if (subcommand !== "view" && !isAdminAndCanChangeFAQ(interaction.member))
+        throw new Error("Only admins and mods can do that");
 
       if (!isValidURL(link ?? "https://www.example.com"))
         throw new Error("Invalid link");
@@ -91,6 +101,27 @@ module.exports = {
           }
         );
 
+        return;
+      }
+
+      if (subcommand === "set") {
+        FAQS.forEach((faq) => {
+          if (!isValidURL(faq.link))
+            throw new Error(`Invalid link for FAQ: ${faq.question}`);
+
+          db.run(
+            `INSERT INTO faqs (question, description, link) VALUES (?, ?, ?)`,
+            [faq.question, faq.description, faq.link],
+            function (err) {
+              if (err) throw err;
+            }
+          );
+        });
+
+        replyOrEditInteraction(
+          interaction,
+          "FAQs have been successfully added."
+        );
         return;
       }
 
