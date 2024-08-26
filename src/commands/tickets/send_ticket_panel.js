@@ -20,14 +20,19 @@ module.exports = {
 
       // Create a dynamic embed and button with custom data
       const embed = createDynamicEmbed({
-        title: `Welcome to ${interaction.guild.name} Support`,
-        description: "Click the button below to create a support ticket.",
+        title: `Ticket creation`,
+        description: "To create ticket react with 🎫",
         thumbnail: interaction.guild.iconURL({ dynamic: true }),
+        footer: {
+          text: interaction.guild.members.me.displayName,
+          iconURL: interaction.guild.members.me.displayAvatarURL(),
+        },
       });
 
       const button = createDynamicButton({
         customId: "create_ticket",
         label: "Create Ticket",
+        emoji: "🎫",
         style: "Primary",
       });
 
