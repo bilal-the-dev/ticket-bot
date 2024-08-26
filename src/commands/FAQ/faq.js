@@ -73,7 +73,7 @@ module.exports = {
       if (!isValidURL(link ?? "https://www.example.com"))
         throw new Error("Invalid link");
 
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply({ ephemeral: subcommand === "view" });
 
       if (subcommand === "add") {
         const db = await getDatabaseConnection();
