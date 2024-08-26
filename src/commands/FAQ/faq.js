@@ -7,7 +7,10 @@ const {
   replyOrEditInteraction,
 } = require("../../utils/interaction");
 const getDatabaseConnection = require("../../utils/SqliteConnect");
-const { isAdminAndCanChangeFAQ } = require("../../utils/misc");
+const {
+  isAdminAndCanChangeFAQ,
+  canRunFAQListCommand,
+} = require("../../utils/misc");
 const FAQS = require("./../../../faqs.json");
 
 module.exports = {
@@ -78,6 +81,9 @@ module.exports = {
       const link = interaction.options.getString("link");
 
       if (subcommand !== "view" && !isAdminAndCanChangeFAQ(interaction.member))
+        throw new Error("Only admins and mods can do that");
+
+      if (subcommand === "view" && !canRunFAQListCommand(interaction.member))
         throw new Error("Only admins and mods can do that");
 
       if (!isValidURL(link ?? "https://www.example.com"))
