@@ -61,7 +61,7 @@ module.exports = async (interaction) => {
 
         const faqEmbed = createDynamicEmbed({
           title: "RPC",
-          description: "More info",
+          description: "Secure browser",
         });
 
         const button = new ButtonBuilder()
