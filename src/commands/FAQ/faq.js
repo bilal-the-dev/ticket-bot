@@ -105,6 +105,8 @@ module.exports = {
       }
 
       if (subcommand === "set") {
+        const db = await getDatabaseConnection();
+
         FAQS.forEach((faq) => {
           if (!isValidURL(faq.link))
             throw new Error(`Invalid link for FAQ: ${faq.question}`);
