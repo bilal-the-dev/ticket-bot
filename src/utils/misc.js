@@ -12,4 +12,5 @@ exports.isAdminAndCanChangeFAQ = (member) =>
   member.roles.cache.has(FAQ_CHANGER_ROLE_ID) || isAdmin(member);
 
 exports.canRunFAQListCommand = (member) =>
-  member.roles.cache.has(FAQ_VIEW_ROLE_ID);
+  member.roles.cache.has(FAQ_VIEW_ROLE_ID) ||
+  member.roles.cache.has(FAQ_CHANGER_ROLE_ID);
