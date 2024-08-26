@@ -22,7 +22,6 @@ module.exports = {
       const embed = createDynamicEmbed({
         title: `Ticket creation`,
         description: "To create ticket react with 🎫",
-        thumbnail: interaction.guild.iconURL({ dynamic: true }),
         footer: {
           text: interaction.guild.members.me.displayName,
           iconURL: interaction.guild.members.me.displayAvatarURL(),
