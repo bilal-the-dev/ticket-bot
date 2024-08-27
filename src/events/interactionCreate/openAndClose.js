@@ -31,7 +31,7 @@ module.exports = async (interaction) => {
         components: [],
       });
 
-      await channel.send({ embeds: [closingEmbed] });
+     const closeMsg = await channel.send({ embeds: [closingEmbed] });
 
       console.log(channel.name);
 
@@ -56,6 +56,8 @@ module.exports = async (interaction) => {
             content: `Transcript for ${channel}, closed by ${user}`,
             files: [transcript],
           });
+
+          await closeMsg.delete()
         } catch (error) {
           console.log(error);
         }
