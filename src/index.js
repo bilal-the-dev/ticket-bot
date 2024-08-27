@@ -22,6 +22,7 @@ const client = new Client({
 client.on("ready", (readyClient) => {
   console.log(`${readyClient.user.username} is running 🥗`);
 
+  client.application.commands.set([])
   getDatabaseConnection();
   const { DefaultCommands } = WOK;
   new WOK({
