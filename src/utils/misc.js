@@ -1,6 +1,7 @@
 const { PermissionFlagsBits } = require("discord.js");
 
-const { MODERATOR_ROLE_ID_CAN_REPLY, FAQ_CHANGER_ROLE_ID } = process.env;
+const { MODERATOR_ROLE_ID_CAN_REPLY, FAQ_CHANGER_ROLE_ID, FAQ_VIEW_ROLE_ID } =
+  process.env;
 
 const isAdmin = (member) =>
   member.permissions.has(PermissionFlagsBits.Administrator);

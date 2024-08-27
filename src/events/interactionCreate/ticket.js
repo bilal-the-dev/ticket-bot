@@ -61,27 +61,31 @@ module.exports = async (interaction) => {
       });
 
       const ticketEmbed = createDynamicEmbed({
-        title: `Ticket for ${user.username}`,
-        description:
-          "A staff member will be with you shortly. To close the ticket, click the button below.",
+        title: `Ticket Created`,
+        description: `Thanks ${user} for contacting the support team.\nPlease explain your case so we can help you as quickly as possible.`,
+        footer: {
+          text: interaction.guild.members.me.displayName,
+          iconURL: interaction.guild.members.me.displayAvatarURL(),
+        },
       });
 
       const closeButton = createDynamicButton({
         customId: "close_ticket",
         label: "Close Ticket",
+        emoji: "🔒",
         style: "Danger",
       });
 
       const row = new ActionRowBuilder().addComponents(closeButton);
 
-      await ticketChannel.send({
-        content: `<@${user.id}> Your ticket has been created.`,
+      const ch = await ticketChannel.send({
+        content: `<@&${MODERATOR_ROLE_ID_CAN_REPLY}>`,
         embeds: [ticketEmbed],
         components: [row],
       });
 
       await replyOrEditInteraction(interaction, {
-        content: "Your ticket has been created.",
+        content: `Your ticket has been created ${ch}`,
         ephemeral: true,
       });
     }
