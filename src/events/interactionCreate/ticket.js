@@ -78,14 +78,14 @@ module.exports = async (interaction) => {
 
       const row = new ActionRowBuilder().addComponents(closeButton);
 
-      const ch = await ticketChannel.send({
+      await ticketChannel.send({
         content: `<@&${MODERATOR_ROLE_ID_CAN_REPLY}>`,
         embeds: [ticketEmbed],
         components: [row],
       });
 
       await replyOrEditInteraction(interaction, {
-        content: `Your ticket has been created ${ch}`,
+        content: `Your ticket has been created ${ticketChannel}`,
         ephemeral: true,
       });
     }
