@@ -11,6 +11,7 @@ const {
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
 const { isAdminAndCanReplyTickets } = require("../../utils/misc");
+const { checkCache, addToCache } = require("../../utils/ticketCache");
 
 const {
   MODERATOR_ROLE_ID_CAN_VIEW,
@@ -25,6 +26,8 @@ module.exports = async (interaction) => {
 
     if (customId === "create_ticket") {
       await interaction.deferReply({ ephemeral: true });
+
+      if (checkCache(user.id)) throw new Error("Your ticket is already open");
 
       const channelName = `ticket-${user.username}`;
 
@@ -59,6 +62,10 @@ module.exports = async (interaction) => {
           },
         ],
       });
+
+      addToCache(user.id);
+
+      console.log(checkCache(user.id));
 
       const ticketEmbed = createDynamicEmbed({
         title: `Ticket Created`,

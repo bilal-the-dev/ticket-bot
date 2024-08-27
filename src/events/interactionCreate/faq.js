@@ -12,7 +12,7 @@ module.exports = async (interaction) => {
   try {
     if (!interaction.isStringSelectMenu()) return;
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply();
 
     const db = await getDatabaseConnection();
     const {

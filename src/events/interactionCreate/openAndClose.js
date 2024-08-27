@@ -1,13 +1,19 @@
 const { handleInteractionError } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createTranscript } = require("discord-html-transcripts");
+const { removeFromCache, checkCache } = require("../../utils/ticketCache");
 
 const { LOGS_CHANNEL_ID, CLOSE_TICKET_CATEGORY_ID } = process.env;
 module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
 
-    const { guild, channel, user } = interaction;
+    const {
+      guild,
+      channel,
+      user,
+      message: { embeds },
+    } = interaction;
 
     if (interaction.customId === "confirm_close_ticket_no") {
       await interaction.update({
@@ -31,9 +37,13 @@ module.exports = async (interaction) => {
         components: [],
       });
 
-     const closeMsg = await channel.send({ embeds: [closingEmbed] });
+      const mess = await interaction.channel.messages.fetch(
+        interaction.message.reference.messageId
+      );
 
-      console.log(channel.name);
+      removeFromCache(mess.embeds[0].data.description.match(/<@(\d+)>/)[1]);
+
+      const closeMsg = await channel.send({ embeds: [closingEmbed] });
 
       setTimeout(async () => {
         try {
@@ -43,8 +53,6 @@ module.exports = async (interaction) => {
             filename: `${channel.name}.html`,
             poweredBy: false,
           });
-
-          console.log(transcript);
 
           const logsChannel = guild.channels.cache.get(LOGS_CHANNEL_ID);
 
@@ -57,7 +65,7 @@ module.exports = async (interaction) => {
             files: [transcript],
           });
 
-          await closeMsg.delete()
+          await closeMsg.delete();
         } catch (error) {
           console.log(error);
         }
