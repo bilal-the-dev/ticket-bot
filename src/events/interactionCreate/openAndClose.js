@@ -53,7 +53,7 @@ module.exports = async (interaction) => {
           });
 
           await logsChannel.send({
-            content: `Transcript for ${channel.name}, closed by ${user}`,
+            content: `Transcript for ${channel}, closed by ${user}`,
             files: [transcript],
           });
         } catch (error) {
