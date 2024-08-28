@@ -23,6 +23,7 @@ module.exports = {
       name: "user",
       description: "Add a new user",
       type: 6,
+      required: true,
     },
   ],
 
