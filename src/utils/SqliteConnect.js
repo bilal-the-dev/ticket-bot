@@ -3,7 +3,7 @@ const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 let db;
 
-const filePath = path.join(__dirname, "database", "database.db");
+const filePath = path.join(__dirname, "..", "database", "database.db");
 console.log(filePath);
 console.log(fs.existsSync(filePath));
 
