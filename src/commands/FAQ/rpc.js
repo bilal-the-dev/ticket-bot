@@ -132,6 +132,16 @@ module.exports = {
         );
         return;
       }
+      if (subcommand === "edit") {
+        const db = await getDatabaseConnection();
+
+        db.run(`UPDATE faqs SET link = ?`, [link], function (err) {
+          if (err) throw err;
+        });
+
+        replyOrEditInteraction(interaction, "Link has been edited");
+        return;
+      }
 
       const types = {
         delete: "delete_faq",

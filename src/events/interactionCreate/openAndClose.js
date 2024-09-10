@@ -2,6 +2,7 @@ const { handleInteractionError } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createTranscript } = require("discord-html-transcripts");
 const { removeFromCache, checkCache } = require("../../utils/ticketCache");
+const AIChat = require("../../models/AIChat");
 
 const { LOGS_CHANNEL_ID, CLOSE_TICKET_CATEGORY_ID } = process.env;
 module.exports = async (interaction) => {
@@ -42,6 +43,8 @@ module.exports = async (interaction) => {
       );
 
       removeFromCache(mess.embeds[0].data.description.match(/<@(\d+)>/)[1]);
+
+      // await AIChat.deleteOne({ channelId: channel.id });
 
       const closeMsg = await channel.send({ embeds: [closingEmbed] });
 

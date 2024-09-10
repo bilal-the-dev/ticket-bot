@@ -12,6 +12,7 @@ const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
 const { isAdminAndCanReplyTickets } = require("../../utils/misc");
 const { checkCache, addToCache } = require("../../utils/ticketCache");
+const AIChat = require("../../models/AIChat");
 
 const {
   MODERATOR_ROLE_ID_CAN_VIEW,
@@ -65,8 +66,6 @@ module.exports = async (interaction) => {
 
       addToCache(user.id);
 
-      console.log(checkCache(user.id));
-
       const ticketEmbed = createDynamicEmbed({
         title: `Ticket Created`,
         description: `Thanks ${user} for contacting the support team.\nPlease explain your case so we can help you as quickly as possible.`,
@@ -90,6 +89,10 @@ module.exports = async (interaction) => {
         embeds: [ticketEmbed],
         components: [row],
       });
+
+      await ticketChannel.send("Hello, how may i assist you today?");
+
+      // await AIChat.create({ channelId: ticketChannel.id });
 
       await replyOrEditInteraction(interaction, {
         content: `Your ticket has been created ${ticketChannel}`,

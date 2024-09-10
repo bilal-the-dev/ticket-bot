@@ -2,10 +2,12 @@ const { Client, IntentsBitField, Partials } = require("discord.js");
 const WOK = require("wokcommands");
 const dotenv = require("dotenv");
 const path = require("path");
+
+const mongoose = require("mongoose");
 const getDatabaseConnection = require("./utils/SqliteConnect");
 dotenv.config({ path: ".env" });
 
-const { TOKEN } = process.env;
+const { TOKEN, MONGO_URI } = process.env;
 
 const client = new Client({
   intents: [
@@ -19,10 +21,11 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-client.on("ready", (readyClient) => {
+client.on("ready", async (readyClient) => {
   console.log(`${readyClient.user.username} is running 🥗`);
 
   // client.application.commands.set([])
+  // await mongoose.connect(MONGO_URI);
   getDatabaseConnection();
   const { DefaultCommands } = WOK;
   new WOK({
