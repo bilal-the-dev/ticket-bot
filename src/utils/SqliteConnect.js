@@ -6,7 +6,7 @@ let db;
 async function getDatabaseConnection() {
   if (db) return db;
   db = new sqlite3.Database(
-    path.join(__dirname, "..", "database/database.db"),
+    path.join(__dirname, "..", "database"),
     sqlite3.OPEN_READWRITE,
     (err) => {
       if (err) throw err;
