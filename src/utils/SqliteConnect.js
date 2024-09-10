@@ -1,12 +1,10 @@
 const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
 
-let db;
-
 async function getDatabaseConnection() {
   if (db) return db;
   db = new sqlite3.Database(
-    path.join(__dirname, "..", "database"),
+    path.join(__dirname, "..", "database/database.db"),
     sqlite3.OPEN_READWRITE,
     (err) => {
       if (err) throw err;
