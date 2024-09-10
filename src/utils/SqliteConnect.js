@@ -1,10 +1,18 @@
 const path = require("path");
 const sqlite3 = require("sqlite3").verbose();
+
 let db;
+
+const filePath = path.join(__dirname, "database", "database.db");
+
+if (!fs.existsSync(filePath)) {
+  fs.writeFileSync(filePath, "", "utf8");
+  console.log(`${filePath} created successfully.`);
+}
 async function getDatabaseConnection() {
   if (db) return db;
   db = new sqlite3.Database(
-    path.join(__dirname, "..", "database/database.db"),
+    path.join(filePath),
     sqlite3.OPEN_READWRITE,
     (err) => {
       if (err) throw err;
