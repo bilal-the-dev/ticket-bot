@@ -12,7 +12,7 @@ const {
   canRunFAQListCommand,
   isAdminAndCanReplyTickets,
 } = require("../../utils/misc");
-const FAQS = require("../../../faqs.json");
+const FAQS = require("../../../../faqs.json");
 
 module.exports = {
   description: "Add a member to ticket",

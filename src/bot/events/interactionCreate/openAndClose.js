@@ -2,7 +2,6 @@ const { handleInteractionError } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createTranscript } = require("discord-html-transcripts");
 const { removeFromCache, checkCache } = require("../../utils/ticketCache");
-const AIChat = require("../../models/AIChat");
 
 const { LOGS_CHANNEL_ID, CLOSE_TICKET_CATEGORY_ID } = process.env;
 module.exports = async (interaction) => {

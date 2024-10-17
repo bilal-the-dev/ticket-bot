@@ -11,7 +11,7 @@ const {
   isAdminAndCanChangeFAQ,
   canRunFAQListCommand,
 } = require("../../utils/misc");
-const FAQS = require("../../../faqs.json");
+const FAQS = require("../../../../faqs.json");
 
 module.exports = {
   description: "Manage FAQs",

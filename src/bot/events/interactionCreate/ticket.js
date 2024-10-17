@@ -12,7 +12,6 @@ const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
 const { isAdminAndCanReplyTickets } = require("../../utils/misc");
 const { checkCache, addToCache } = require("../../utils/ticketCache");
-const AIChat = require("../../models/AIChat");
 
 const {
   MODERATOR_ROLE_ID_CAN_VIEW,

@@ -11,6 +11,7 @@ if (!fs.existsSync(filePath)) {
   fs.writeFileSync(filePath, "", "utf8");
   console.log(`${filePath} created successfully.`);
 }
+
 async function getDatabaseConnection() {
   if (db) return db;
   db = new sqlite3.Database(
