@@ -31,10 +31,12 @@ http
 
             const guilds = JSON.parse(body);
 
-            const filteredGuilds = guilds.filter((g) =>
-              client.guilds.cache.has(g.id)
-            );
-            res.end(JSON.stringify(filteredGuilds));
+            const modifiedGuilds = guilds.map((g) => {
+              client.guilds.cache.has(g.id) ? (g.isBotPresent = true) : null;
+
+              return g;
+            });
+            res.end(JSON.stringify(modifiedGuilds));
           });
       }
     } catch (error) {
