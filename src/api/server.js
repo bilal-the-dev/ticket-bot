@@ -3,7 +3,7 @@ const http = require("node:http");
 const discordClient = require("../bot");
 const client = require("../bot");
 
-const { BASE_URL, PORT = 8080 } = process.env;
+const { BASE_URL, BOT_OUATH_URL, PORT = 8080 } = process.env;
 http
   .createServer(function (req, res) {
     try {
@@ -36,7 +36,9 @@ http
 
               return g;
             });
-            res.end(JSON.stringify(modifiedGuilds));
+            res.end(
+              JSON.stringify({ inviteURL: BOT_OUATH_URL, modifiedGuilds })
+            );
           });
       }
     } catch (error) {
