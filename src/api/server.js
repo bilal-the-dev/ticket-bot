@@ -11,12 +11,32 @@ http
 
       if (!url.startsWith(BASE_URL) || !client.isReady()) return res.write();
 
-      console.log(req.headers);
-      console.log(req.trailers);
+      const slicedURL = url.split("/api")[1];
+
+      // console.log(slicedURL);
+
+      // console.log(req.headers);
+      // console.log(req.trailers);
 
       req.on("error", console.log);
       res.on("error", console.log);
 
+      if (method === "GET") {
+        if (slicedURL.startsWith("/guilds")) {
+          const [_, , guildId, action] = slicedURL.split("/");
+
+          // console.log(action);
+
+          if (action === "roles") {
+            const roles =
+              client.guilds.cache
+                .get(guildId)
+                ?.roles.cache.filter((r) => !r.managed) ?? [];
+
+            return res.end(JSON.stringify(roles));
+          }
+        }
+      }
       if (method === "POST") {
         let body = [];
         req
