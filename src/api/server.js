@@ -3,6 +3,7 @@ const http = require("node:http");
 const discordClient = require("../bot");
 const client = require("../bot");
 const { URL } = require("node:url");
+const { ChannelType } = require("discord.js");
 
 const { BASE_URL, BOT_OUATH_URL, PORT = 8080 } = process.env;
 http
@@ -33,20 +34,32 @@ http
 
           const data = {};
 
+          const guild = client.guilds.cache.get(guildId);
+
+          if (!guild) return res.end("{}");
+
           if (queryParams.get("withRoles") == "true") {
-            const roles =
-              client.guilds.cache
-                .get(guildId)
-                ?.roles.cache.filter((r) => !r.managed) ?? [];
+            const roles = guild.roles.cache.filter((r) => !r.managed) ?? [];
 
             data.roles = roles;
           }
 
           if (queryParams.get("withChannels") == "true") {
             const channels =
-              client.guilds.cache.get(guildId)?.channels.cache ?? [];
+              guild.channels.cache.filter(
+                (c) => c.type === ChannelType.GuildText
+              ) ?? [];
 
             data.channels = channels;
+          }
+
+          if (queryParams.get("withCategories") == "true") {
+            const categories =
+              guild.channels.cache.filter(
+                (c) => c.type === ChannelType.GuildCategory
+              ) ?? [];
+
+            data.categories = categories;
           }
 
           return res.end(JSON.stringify(data));
