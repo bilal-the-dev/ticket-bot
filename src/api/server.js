@@ -2,6 +2,7 @@ const http = require("node:http");
 
 const discordClient = require("../bot");
 const client = require("../bot");
+const { URL } = require("node:url");
 
 const { BASE_URL, BOT_OUATH_URL, PORT = 8080 } = process.env;
 http
@@ -25,16 +26,30 @@ http
         if (slicedURL.startsWith("/guilds")) {
           const [_, , guildId, action] = slicedURL.split("/");
 
-          // console.log(action);
+          if (!action.startsWith("cache")) return;
 
-          if (action === "roles") {
+          const queryParams = new URLSearchParams(url.split("?")[1]);
+          console.log(queryParams);
+
+          const data = {};
+
+          if (queryParams.get("withRoles") == "true") {
             const roles =
               client.guilds.cache
                 .get(guildId)
                 ?.roles.cache.filter((r) => !r.managed) ?? [];
 
-            return res.end(JSON.stringify(roles));
+            data.roles = roles;
           }
+
+          if (queryParams.get("withChannels") == "true") {
+            const channels =
+              client.guilds.cache.get(guildId)?.channels.cache ?? [];
+
+            data.channels = channels;
+          }
+
+          return res.end(JSON.stringify(data));
         }
       }
       if (method === "POST") {

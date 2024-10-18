@@ -8,6 +8,7 @@
     "dotenv": "^16.4.5",
     "mongoose": "^8.6.0",
     "openai": "^4.56.1",
+    "shared-models": "github:bilal-the-dev/-shared-tickety-schemas",
     "sqlite3": "^5.1.7",
     "validator": "^13.12.0",
     "wokcommands": "^2.1.9"
