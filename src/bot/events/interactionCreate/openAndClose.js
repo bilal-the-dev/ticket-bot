@@ -7,7 +7,7 @@ module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
 
-    const { guild, channel, user } = interaction;
+    const { guild, channel, user, customId } = interaction;
 
     const [type, panelId] = customId.split("-");
 

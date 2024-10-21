@@ -23,7 +23,7 @@ module.exports = async (interaction) => {
       guild,
       customId,
       member,
-      messaged: { id: panelMessageId },
+      message: { id: panelMessageId },
       channel,
     } = interaction;
 
