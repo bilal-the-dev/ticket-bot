@@ -6,8 +6,8 @@ const { MODERATOR_ROLE_ID_CAN_REPLY, FAQ_CHANGER_ROLE_ID, FAQ_VIEW_ROLE_ID } =
 const isAdmin = (member) =>
   member.permissions.has(PermissionFlagsBits.Administrator);
 
-exports.isAdminAndCanReplyTickets = (member) =>
-  member.roles.cache.has(MODERATOR_ROLE_ID_CAN_REPLY) || isAdmin(member);
+exports.isAdminAndCanReplyTickets = (member, roles) =>
+  roles.some((r) => member.roles.cache.has(r)) || isAdmin(member);
 
 exports.isAdminAndCanChangeFAQ = (member) =>
   member.roles.cache.has(FAQ_CHANGER_ROLE_ID) || isAdmin(member);

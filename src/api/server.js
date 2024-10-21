@@ -1,13 +1,11 @@
 const http = require("node:http");
 
-const discordClient = require("../bot");
 const client = require("../bot");
-const { URL } = require("node:url");
-const { ChannelType } = require("discord.js");
+const { ChannelType, PermissionFlagsBits } = require("discord.js");
 
 const { BASE_URL, BOT_OUATH_URL, PORT = 8080 } = process.env;
 http
-  .createServer(function (req, res) {
+  .createServer(async function (req, res) {
     try {
       const { url, method } = req;
 
@@ -25,44 +23,62 @@ http
 
       if (method === "GET") {
         if (slicedURL.startsWith("/guilds")) {
-          const [_, , guildId, action] = slicedURL.split("/");
+          const [_, , guildId, action, Id] = slicedURL.split("/");
 
-          if (!action.startsWith("cache")) return;
+          if (action === "admin") {
+            const guild = client.guilds.cache.get(guildId);
 
-          const queryParams = new URLSearchParams(url.split("?")[1]);
-          console.log(queryParams);
+            const response = { isAdmin: false };
 
-          const data = {};
+            if (!guild) return res.end(JSON.stringify(response));
 
-          const guild = client.guilds.cache.get(guildId);
+            const member = await guild.members.fetch(Id).catch(() => null);
 
-          if (!guild) return res.end("{}");
+            if (
+              !member ||
+              !member.permissions.has(PermissionFlagsBits.Administrator)
+            )
+              return res.end(JSON.stringify(response));
 
-          if (queryParams.get("withRoles") == "true") {
-            const roles = guild.roles.cache.filter((r) => !r.managed) ?? [];
-
-            data.roles = roles;
+            response.isAdmin = true;
+            return res.end(JSON.stringify(response));
           }
+          if (!action.startsWith("cache")) {
+            const queryParams = new URLSearchParams(url.split("?")[1]);
+            console.log(queryParams);
 
-          if (queryParams.get("withChannels") == "true") {
-            const channels =
-              guild.channels.cache.filter(
-                (c) => c.type === ChannelType.GuildText
-              ) ?? [];
+            const data = {};
 
-            data.channels = channels;
+            const guild = client.guilds.cache.get(guildId);
+
+            if (!guild) return res.end("{}");
+
+            if (queryParams.get("withRoles") == "true") {
+              const roles = guild.roles.cache.filter((r) => !r.managed) ?? [];
+
+              data.roles = roles;
+            }
+
+            if (queryParams.get("withChannels") == "true") {
+              const channels =
+                guild.channels.cache.filter(
+                  (c) => c.type === ChannelType.GuildText
+                ) ?? [];
+
+              data.channels = channels;
+            }
+
+            if (queryParams.get("withCategories") == "true") {
+              const categories =
+                guild.channels.cache.filter(
+                  (c) => c.type === ChannelType.GuildCategory
+                ) ?? [];
+
+              data.categories = categories;
+            }
+
+            return res.end(JSON.stringify(data));
           }
-
-          if (queryParams.get("withCategories") == "true") {
-            const categories =
-              guild.channels.cache.filter(
-                (c) => c.type === ChannelType.GuildCategory
-              ) ?? [];
-
-            data.categories = categories;
-          }
-
-          return res.end(JSON.stringify(data));
         }
       }
       if (method === "POST") {

@@ -7,6 +7,7 @@ const createDynamicEmbed = ({
   thumbnail,
   footer,
   image,
+  author,
 }) => {
   const embed = new EmbedBuilder().setColor(STATIC_EMBED_COLOR);
 
@@ -15,6 +16,7 @@ const createDynamicEmbed = ({
   if (thumbnail) embed.setThumbnail(thumbnail);
   if (footer) embed.setFooter(footer);
   if (image) embed.setImage(image);
+  if (author) embed.setAuthor(author);
 
   return embed;
 };

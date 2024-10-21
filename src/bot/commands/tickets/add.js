@@ -13,6 +13,7 @@ const {
   isAdminAndCanReplyTickets,
 } = require("../../utils/misc");
 const FAQS = require("../../../../faqs.json");
+const { Tickets } = require("shared-models");
 
 module.exports = {
   description: "Add a member to ticket",
@@ -34,10 +35,17 @@ module.exports = {
 
       await interaction.deferReply();
 
-      if (channel.parentId !== process.env.TICKET_CATEGORY_ID)
-        throw new Error("This is not a ticket");
+      const ticket = await Tickets.findOne({
+        channelId: channel.id,
+      }).populate("panelId");
 
-      if (!isAdminAndCanReplyTickets(member))
+      if (!ticket) throw new Error("Ticket is already closed");
+
+      const {
+        panelId: { rolesToPing },
+      } = ticket;
+      // Check if the user has admin permissions
+      if (!isAdminAndCanReplyTickets(member, rolesToPing))
         throw new Error("Only admins or mods can perform this task");
 
       await channel.permissionOverwrites.create(user.id, {

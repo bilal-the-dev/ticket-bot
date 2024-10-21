@@ -80,6 +80,9 @@ module.exports = {
       const description = interaction.options.getString("description");
       const link = interaction.options.getString("link");
 
+      if (interaction.guild.id !== process.env.MAIN_GUILD_ID)
+        throw new Error("Unauhtorized command");
+
       if (subcommand !== "view" && !isAdminAndCanChangeFAQ(interaction.member))
         throw new Error("Only admins and mods can do that");
 

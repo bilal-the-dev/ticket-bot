@@ -1,21 +1,17 @@
 const { handleInteractionError } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createTranscript } = require("discord-html-transcripts");
-const { removeFromCache, checkCache } = require("../../utils/ticketCache");
+const { Guilds, Panels } = require("shared-models");
 
-const { LOGS_CHANNEL_ID, CLOSE_TICKET_CATEGORY_ID } = process.env;
 module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
 
-    const {
-      guild,
-      channel,
-      user,
-      message: { embeds },
-    } = interaction;
+    const { guild, channel, user } = interaction;
 
-    if (interaction.customId === "confirm_close_ticket_no") {
+    const [type, panelId] = customId.split("-");
+
+    if (type === "confirm_close_ticket_no") {
       await interaction.update({
         content: "Cancelled",
         components: [],
@@ -23,13 +19,25 @@ module.exports = async (interaction) => {
       });
     }
 
-    if (interaction.customId === "confirm_close_ticket_yes") {
-      if (channel.parentId === CLOSE_TICKET_CATEGORY_ID)
-        throw new Error("Ticket is already closed");
+    if (type === "confirm_close_ticket_yes") {
+      const doc = await Guilds.findOne({
+        guildId: guild.id,
+      });
+
+      const { discordSettings } = doc;
+
+      const panel = await Panels.findById(panelId);
+
+      if (!panel)
+        throw new Error(
+          "Panel connected to this ticket seems to be deleted by admins"
+        );
 
       const closingEmbed = createDynamicEmbed({
         title: "Ticket Closing",
         description: "This ticket will close in a few seconds.",
+        color: discordSettings.embedColor,
+        footer: { text: discordSettings.embedFooter },
       });
       await interaction.update({
         content: "Closing",
@@ -37,18 +45,21 @@ module.exports = async (interaction) => {
         components: [],
       });
 
-      const mess = await interaction.channel.messages.fetch(
-        interaction.message.reference.messageId
-      );
-
-      removeFromCache(mess.embeds[0].data.description.match(/<@(\d+)>/)[1]);
-
-      // await AIChat.deleteOne({ channelId: channel.id });
+      doc.closedTickets.push(new Date());
+      await doc.save();
 
       const closeMsg = await channel.send({ embeds: [closingEmbed] });
 
       setTimeout(async () => {
         try {
+          if (!panel.saveTranscripts) return;
+
+          const logsChannel = guild.channels.cache.get(
+            discordSettings.loggingChannelId
+          );
+
+          if (!logsChannel) return;
+
           const transcript = await createTranscript(channel, {
             limit: -1,
             returnType: "attachment",
@@ -56,9 +67,7 @@ module.exports = async (interaction) => {
             poweredBy: false,
           });
 
-          const logsChannel = guild.channels.cache.get(LOGS_CHANNEL_ID);
-
-          await channel.setParent(CLOSE_TICKET_CATEGORY_ID, {
+          await channel.setParent(panel.ticketCloseCategoryId, {
             lockPermissions: true,
           });
 

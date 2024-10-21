@@ -1,8 +1,9 @@
 const {
   ActionRowBuilder,
   ButtonStyle,
-  ChannelType,
   PermissionFlagsBits,
+  EmbedBuilder,
+  ButtonBuilder,
 } = require("discord.js");
 const {
   handleInteractionError,
@@ -11,31 +12,73 @@ const {
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
 const { isAdminAndCanReplyTickets } = require("../../utils/misc");
-const { checkCache, addToCache } = require("../../utils/ticketCache");
+const { Panels, Tickets, Guilds } = require("shared-models");
 
-const {
-  MODERATOR_ROLE_ID_CAN_VIEW,
-  MODERATOR_ROLE_ID_CAN_REPLY,
-  TICKET_CATEGORY_ID,
-} = process.env;
 module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
 
-    const { user, guild, customId, member } = interaction;
+    const {
+      user,
+      guild,
+      customId,
+      member,
+      messaged: { id: panelMessageId },
+      channel,
+    } = interaction;
 
-    if (customId === "create_ticket") {
+    if (customId === "openTicket") {
       await interaction.deferReply({ ephemeral: true });
 
-      if (checkCache(user.id)) throw new Error("Your ticket is already open");
+      const panel = await Panels.findOne({ panelMessageId });
 
-      const channelName = `ticket-${user.username}`;
+      if (!panel)
+        throw new Error("The panel does not work any more (deleted by admin)");
 
-      const category = guild.channels.cache.get(TICKET_CATEGORY_ID);
+      const {
+        ticketSettings: { ticketCap, name },
+        openedTickets,
+        panelName,
+        ticketOpenCategoryId,
+        rolesToPing,
+        ticketEmbed,
+        ticketCloseButton,
+      } = panel;
+
+      const userOpenedTickets = await Tickets.countDocuments({
+        panelId: panel._id,
+        userId: user.id,
+      });
+
+      if (userOpenedTickets >= ticketCap)
+        throw new Error(
+          `You can not have more than ${ticketCap} ticket(s) opened at a time`
+        );
+
+      const { discordSettings } = await Guilds.findOne({ guildId: guild.id });
+
+      const embed = new EmbedBuilder(ticketEmbed);
+
+      const closeButton = new ButtonBuilder(ticketCloseButton);
+
+      const row = new ActionRowBuilder().addComponents(closeButton);
+
+      const channelName = name
+        .replace("{ticketnum}", openedTickets)
+        .replace("{username}", user.username)
+        .replace("{panel}", panelName);
+
+      const permOverwrites = rolesToPing.map((r) => ({
+        id: r,
+        allow: [
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.SendMessages,
+        ],
+      }));
 
       const ticketChannel = await interaction.guild.channels.create({
         name: channelName,
-        parent: category.id,
+        parent: ticketOpenCategoryId,
         permissionOverwrites: [
           {
             id: user.id,
@@ -44,75 +87,78 @@ module.exports = async (interaction) => {
               PermissionFlagsBits.SendMessages,
             ],
           },
-          {
-            id: MODERATOR_ROLE_ID_CAN_REPLY,
-            allow: [
-              PermissionFlagsBits.ViewChannel,
-              PermissionFlagsBits.SendMessages,
-            ],
-          },
-          {
-            id: MODERATOR_ROLE_ID_CAN_VIEW,
+          ...(discordSettings.adminRoleId && {
+            id: discordSettings.adminRoleId,
             allow: [PermissionFlagsBits.ViewChannel],
             deny: [PermissionFlagsBits.SendMessages],
-          },
+          }),
           {
             id: guild.roles.everyone.id,
             deny: [PermissionFlagsBits.ViewChannel],
           },
+          ...permOverwrites,
         ],
       });
 
-      addToCache(user.id);
-
-      const ticketEmbed = createDynamicEmbed({
-        title: `Ticket Created`,
-        description: `Thanks ${user} for contacting the support team.\nPlease explain your case so we can help you as quickly as possible.`,
-        footer: {
-          text: interaction.guild.members.me.displayName,
-          iconURL: interaction.guild.members.me.displayAvatarURL(),
-        },
-      });
-
-      const closeButton = createDynamicButton({
-        customId: "close_ticket",
-        label: "Close Ticket",
-        emoji: "🔒",
-        style: "Danger",
-      });
-
-      const row = new ActionRowBuilder().addComponents(closeButton);
-
-      await ticketChannel.send({
-        content: `<@&${MODERATOR_ROLE_ID_CAN_REPLY}>`,
-        embeds: [ticketEmbed],
+      const sendP = ticketChannel.send({
+        content: `${rolesToPing.reduce((acc, cur) => acc + `<@&${cur}> `, "")}`,
+        embeds: [embed],
         components: [row],
       });
 
-      await ticketChannel.send("Hello, how may i assist you today?");
+      // await ticketChannel.send("Hello, how may i assist you today?");
 
-      // await AIChat.create({ channelId: ticketChannel.id });
-
-      await replyOrEditInteraction(interaction, {
+      const replyP = replyOrEditInteraction(interaction, {
         content: `Your ticket has been created ${ticketChannel}`,
         ephemeral: true,
       });
+
+      panel.openedTickets++;
+
+      const addP = Guilds.findOneAndUpdate(
+        { guildId: guild.id },
+        { $push: { openedTickets: new Date() } }
+      );
+
+      const newTicketP = Tickets.create({
+        userId: user.id,
+        guildId: guild.id,
+        panelId: panel._id,
+        channelId: ticketChannel.id,
+      });
+      const panelSaveP = panel.save();
+
+      await Promise.all([sendP, replyP, newTicketP, panelSaveP, addP]);
     }
 
     if (customId === "close_ticket") {
       await interaction.deferReply({ ephemeral: true });
 
+      const ticket = await Tickets.findOne({
+        channelId: channel.id,
+        status: "active",
+      }).populate("panelId");
+
+      if (!ticket) throw new Error("Ticket is already closed");
+
+      const {
+        panelId: { rolesToPing, _id },
+      } = ticket;
       // Check if the user has admin permissions
-      if (!isAdminAndCanReplyTickets(member))
+      if (!isAdminAndCanReplyTickets(member, rolesToPing))
         throw new Error("Only admins or mods can perform this task");
+
+      const { discordSettings } = await Guilds.findOne({ guildId: guild.id });
 
       const confirmationEmbed = createDynamicEmbed({
         title: "Confirm Ticket Closure",
         description: "Are you sure you want to close this ticket?",
+        color: discordSettings.embedColor,
+        footer: { text: discordSettings.embedFooter },
       });
 
       const yesButton = createDynamicButton({
-        customId: "confirm_close_ticket_yes",
+        customId: `confirm_close_ticket_yes-${_id}`,
         label: "Yes",
         style: ButtonStyle.Danger,
       });
