@@ -25,6 +25,8 @@ http
         if (slicedURL.startsWith("/guilds")) {
           const [_, , guildId, action, Id] = slicedURL.split("/");
 
+          console.log(action, Id);
+
           if (action === "admin") {
             const guild = client.guilds.cache.get(guildId);
 

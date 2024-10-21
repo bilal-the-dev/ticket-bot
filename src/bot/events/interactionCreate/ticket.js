@@ -122,6 +122,7 @@ module.exports = async (interaction) => {
 
       const newTicketP = Tickets.create({
         userId: user.id,
+        creatorName: user.username,
         guildId: guild.id,
         panelId: panel._id,
         channelId: ticketChannel.id,
