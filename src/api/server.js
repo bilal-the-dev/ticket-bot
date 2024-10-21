@@ -45,7 +45,7 @@ http
             response.isAdmin = true;
             return res.end(JSON.stringify(response));
           }
-          if (!action.startsWith("cache")) {
+          if (action.startsWith("cache")) {
             const queryParams = new URLSearchParams(url.split("?")[1]);
             console.log(queryParams);
 
