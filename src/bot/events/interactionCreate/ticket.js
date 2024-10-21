@@ -139,7 +139,7 @@ module.exports = async (interaction) => {
       await Promise.all([sendP, replyP, newTicketP, panelSaveP, addP]);
     }
 
-    if (customId === "close_ticket") {
+    if (customId === "closeTicket") {
       await interaction.deferReply({ ephemeral: true });
 
       const ticket = await Tickets.findOne({
