@@ -59,7 +59,10 @@ module.exports = async (interaction) => {
 
       const embed = new EmbedBuilder(ticketEmbed);
 
+      console.log(ticketCloseButton);
+
       ticketCloseButton.style = ButtonStyle[ticketCloseButton.style];
+      console.log(ticketCloseButton);
 
       const closeButton = new ButtonBuilder(ticketCloseButton);
 
