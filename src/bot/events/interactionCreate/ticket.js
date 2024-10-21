@@ -48,6 +48,7 @@ module.exports = async (interaction) => {
       const userOpenedTickets = await Tickets.countDocuments({
         panelId: panel._id,
         userId: user.id,
+        status: "active",
       });
 
       if (userOpenedTickets >= ticketCap)
@@ -81,28 +82,32 @@ module.exports = async (interaction) => {
         ],
       }));
 
+      const originalOver = [
+        {
+          id: user.id,
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+          ],
+        },
+        {
+          id: guild.roles.everyone.id,
+          deny: [PermissionFlagsBits.ViewChannel],
+        },
+        ...permOverwrites,
+      ];
+
+      discordSettings.adminRoleId &&
+        originalOver.push({
+          id: discordSettings.adminRoleId,
+          allow: [PermissionFlagsBits.ViewChannel],
+          deny: [PermissionFlagsBits.SendMessages],
+        });
+
       const ticketChannel = await interaction.guild.channels.create({
         name: channelName,
         parent: ticketOpenCategoryId,
-        permissionOverwrites: [
-          {
-            id: user.id,
-            allow: [
-              PermissionFlagsBits.ViewChannel,
-              PermissionFlagsBits.SendMessages,
-            ],
-          },
-          ...(discordSettings.adminRoleId && {
-            id: discordSettings.adminRoleId,
-            allow: [PermissionFlagsBits.ViewChannel],
-            deny: [PermissionFlagsBits.SendMessages],
-          }),
-          {
-            id: guild.roles.everyone.id,
-            deny: [PermissionFlagsBits.ViewChannel],
-          },
-          ...permOverwrites,
-        ],
+        permissionOverwrites: originalOver,
       });
 
       const sendP = ticketChannel.send({

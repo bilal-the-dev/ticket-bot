@@ -1,7 +1,7 @@
 const { handleInteractionError } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createTranscript } = require("discord-html-transcripts");
-const { Guilds, Panels } = require("shared-models");
+const { Guilds, Panels, Tickets } = require("shared-models");
 
 module.exports = async (interaction) => {
   try {
@@ -44,6 +44,10 @@ module.exports = async (interaction) => {
         embeds: [],
         components: [],
       });
+      await Tickets.findOneAndUpdate(
+        { channelId: channel.id },
+        { status: "closed" }
+      );
 
       doc.closedTickets.push(new Date());
       await doc.save();

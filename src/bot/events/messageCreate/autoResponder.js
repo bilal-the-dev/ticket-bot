@@ -15,6 +15,8 @@ module.exports = async (message) => {
 
     if (!guild || guild?.autoResponders?.length === 0) return;
 
+    console.log(guild);
+
     const responder = guild.autoResponders.find(
       (a) =>
         content.includes(a.trigger) && !a.ignoredChannels.includes(channelId)
