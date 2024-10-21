@@ -30,7 +30,7 @@ module.exports = async (interaction) => {
     if (customId === "openTicket") {
       await interaction.deferReply({ ephemeral: true });
 
-      const panel = await Panels.findOne({ panelMessageId });
+      const panel = await Panels.findOne({ panelMessageId }).lean();
 
       if (!panel)
         throw new Error("The panel does not work any more (deleted by admin)");
@@ -118,7 +118,7 @@ module.exports = async (interaction) => {
         ephemeral: true,
       });
 
-      panel.openedTickets++;
+      // panel.openedTickets++;
 
       const addP = Guilds.findOneAndUpdate(
         { guildId: guild.id },
@@ -132,7 +132,9 @@ module.exports = async (interaction) => {
         panelId: panel._id,
         channelId: ticketChannel.id,
       });
-      const panelSaveP = panel.save();
+      const panelSaveP = Panels.findByIdAndUpdate(panel._id, {
+        $inc: { openedTickets: 1 },
+      });
 
       await Promise.all([sendP, replyP, newTicketP, panelSaveP, addP]);
     }
