@@ -22,7 +22,7 @@ client.on("ready", async (readyClient) => {
   console.log(`${readyClient.user.username} is running 🥗`);
 
   // client.application.commands.set([])
-  getDatabaseConnection();
+  // getDatabaseConnection();
   const { DefaultCommands } = WOK;
   new WOK({
     client,
