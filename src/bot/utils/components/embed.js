@@ -14,7 +14,7 @@ const createDynamicEmbed = ({
   if (description) embed.setDescription(description);
   if (title) embed.setTitle(title);
   if (thumbnail) embed.setThumbnail(thumbnail);
-  if (footer) embed.setFooter(footer);
+  if (footer?.text) embed.setFooter(footer);
   if (image) embed.setImage(image);
   if (author) embed.setAuthor(author);
 
