@@ -1,18 +1,9 @@
 const { CommandType } = require("wokcommands");
-const { PermissionFlagsBits } = require("discord.js");
-const isValidURL = require("validator/lib/isURL");
-const { getFAQs, createFAQDropdown } = require("../../utils/faq");
 const {
   handleInteractionError,
   replyOrEditInteraction,
 } = require("../../utils/interaction");
-const getDatabaseConnection = require("../../utils/SqliteConnect");
-const {
-  isAdminAndCanChangeFAQ,
-  canRunFAQListCommand,
-  isAdminAndCanReplyTickets,
-} = require("../../utils/misc");
-const FAQS = require("../../../faqs.json");
+const { isAdminAndCanReplyTickets } = require("../../utils/misc");
 
 module.exports = {
   description: "Add a member to ticket",

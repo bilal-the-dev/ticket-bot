@@ -1,20 +1,14 @@
 const { handleInteractionError } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createTranscript } = require("discord-html-transcripts");
-const { removeFromCache, checkCache } = require("../../utils/ticketCache");
-const AIChat = require("../../models/AIChat");
+const Tickets = require("../../models/Tickets");
 
 const { LOGS_CHANNEL_ID, CLOSE_TICKET_CATEGORY_ID } = process.env;
 module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
 
-    const {
-      guild,
-      channel,
-      user,
-      message: { embeds },
-    } = interaction;
+    const { guild, channel, user } = interaction;
 
     if (interaction.customId === "confirm_close_ticket_no") {
       await interaction.update({
@@ -38,13 +32,11 @@ module.exports = async (interaction) => {
         components: [],
       });
 
-      const mess = await interaction.channel.messages.fetch(
+      await Tickets.findOneAndDelete({ channelId: channel.id });
+
+      await interaction.channel.messages.fetch(
         interaction.message.reference.messageId
       );
-
-      removeFromCache(mess.embeds[0].data.description.match(/<@(\d+)>/)[1]);
-
-      // await AIChat.deleteOne({ channelId: channel.id });
 
       const closeMsg = await channel.send({ embeds: [closingEmbed] });
 

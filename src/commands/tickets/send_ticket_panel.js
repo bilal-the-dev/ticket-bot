@@ -11,7 +11,7 @@ module.exports = {
   // Command configuration
   description: "Open a ticket support system",
   guildOnly: true,
-  permissions: [PermissionFlagsBits.Administrator], // Change to the correct permissions
+  permissions: [PermissionFlagsBits.Administrator],
   type: CommandType.SLASH,
 
   callback: async ({ interaction }) => {

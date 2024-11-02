@@ -1,7 +1,6 @@
 const {
   ActionRowBuilder,
   ButtonStyle,
-  ChannelType,
   PermissionFlagsBits,
 } = require("discord.js");
 const {
@@ -11,14 +10,14 @@ const {
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
 const { isAdminAndCanReplyTickets } = require("../../utils/misc");
-const { checkCache, addToCache } = require("../../utils/ticketCache");
-const AIChat = require("../../models/AIChat");
+const Tickets = require("../../models/Tickets");
 
 const {
   MODERATOR_ROLE_ID_CAN_VIEW,
   MODERATOR_ROLE_ID_CAN_REPLY,
   TICKET_CATEGORY_ID,
 } = process.env;
+
 module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
@@ -28,7 +27,10 @@ module.exports = async (interaction) => {
     if (customId === "create_ticket") {
       await interaction.deferReply({ ephemeral: true });
 
-      if (checkCache(user.id)) throw new Error("Your ticket is already open");
+      const userTickets = await Tickets.find({ userId: user.id });
+
+      if (userTickets.length > 0)
+        throw new Error("Your ticket is already open");
 
       const channelName = `ticket-${user.username}`;
 
@@ -64,7 +66,7 @@ module.exports = async (interaction) => {
         ],
       });
 
-      addToCache(user.id);
+      await Tickets.create({ userId: user.id, channelId: ticketChannel.id });
 
       const ticketEmbed = createDynamicEmbed({
         title: `Ticket Created`,
@@ -89,10 +91,6 @@ module.exports = async (interaction) => {
         embeds: [ticketEmbed],
         components: [row],
       });
-
-      await ticketChannel.send("Hello, how may i assist you today?");
-
-      // await AIChat.create({ channelId: ticketChannel.id });
 
       await replyOrEditInteraction(interaction, {
         content: `Your ticket has been created ${ticketChannel}`,

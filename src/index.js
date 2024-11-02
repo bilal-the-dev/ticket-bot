@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 const path = require("path");
 
 const mongoose = require("mongoose");
-const getDatabaseConnection = require("./utils/SqliteConnect");
 dotenv.config({ path: ".env" });
 
 const { TOKEN, MONGO_URI } = process.env;
@@ -25,8 +24,11 @@ client.on("ready", async (readyClient) => {
   console.log(`${readyClient.user.username} is running 🥗`);
 
   // client.application.commands.set([])
-  // await mongoose.connect(MONGO_URI);
-  getDatabaseConnection();
+  await mongoose
+    .connect(MONGO_URI)
+    .then(() => console.log("Successfully connected to database"))
+    .catch(console.error);
+
   const { DefaultCommands } = WOK;
   new WOK({
     client,
