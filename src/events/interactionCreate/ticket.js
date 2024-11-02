@@ -11,18 +11,20 @@ const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
 const { isAdminAndCanReplyTickets } = require("../../utils/misc");
 const Tickets = require("../../models/Tickets");
+const { createTranscript } = require("discord-html-transcripts");
 
 const {
   MODERATOR_ROLE_ID_CAN_VIEW,
   MODERATOR_ROLE_ID_CAN_REPLY,
   TICKET_CATEGORY_ID,
+  LOGS_CHANNEL_ID,
 } = process.env;
 
 module.exports = async (interaction) => {
   try {
     if (!interaction.isButton()) return;
 
-    const { user, guild, customId, member } = interaction;
+    const { user, guild, customId, member, channel } = interaction;
 
     if (customId === "create_ticket") {
       await interaction.deferReply({ ephemeral: true });
@@ -99,35 +101,36 @@ module.exports = async (interaction) => {
     }
 
     if (customId === "close_ticket") {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferUpdate({});
 
       // Check if the user has admin permissions
       if (!isAdminAndCanReplyTickets(member))
         throw new Error("Only admins or mods can perform this task");
 
-      const confirmationEmbed = createDynamicEmbed({
-        title: "Confirm Ticket Closure",
-        description: "Are you sure you want to close this ticket?",
+      const closingEmbed = createDynamicEmbed({
+        title: "Ticket Closing",
+        description: "This ticket will close in a few seconds.",
       });
 
-      const yesButton = createDynamicButton({
-        customId: "confirm_close_ticket_yes",
-        label: "Yes",
-        style: ButtonStyle.Danger,
+      await Tickets.findOneAndDelete({ channelId: channel.id });
+
+      await channel.send({ embeds: [closingEmbed] });
+
+      const transcript = await createTranscript(channel, {
+        limit: -1,
+        returnType: "attachment",
+        filename: `${channel.name}.html`,
+        poweredBy: false,
       });
 
-      const noButton = createDynamicButton({
-        customId: "confirm_close_ticket_no",
-        label: "No",
-        style: ButtonStyle.Secondary,
+      const logsChannel = guild.channels.cache.get(LOGS_CHANNEL_ID);
+
+      await logsChannel.send({
+        content: `Transcript for ${channel}, closed by ${user}`,
+        files: [transcript],
       });
 
-      const row = new ActionRowBuilder().addComponents(yesButton, noButton);
-
-      await replyOrEditInteraction(interaction, {
-        embeds: [confirmationEmbed],
-        components: [row],
-      });
+      await channel.delete();
     }
   } catch (error) {
     await handleInteractionError(error, interaction);
