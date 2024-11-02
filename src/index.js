@@ -21,7 +21,9 @@ const client = new Client({
 });
 
 client.on("ready", async (readyClient) => {
-  console.log(`${readyClient.user.username} is running 🥗`);
+  console.log(
+    `${readyClient.user.username} (${readyClient.user.id}) is running 🥗`
+  );
 
   // client.application.commands.set([])
   await mongoose
