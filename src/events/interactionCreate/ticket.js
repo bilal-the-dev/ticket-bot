@@ -9,7 +9,7 @@ const {
 } = require("../../utils/interaction");
 const { createDynamicEmbed } = require("../../utils/components/embed");
 const { createDynamicButton } = require("../../utils/components/button");
-const { isAdminAndCanReplyTickets } = require("../../utils/misc");
+const { hasAdminPerms } = require("../../utils/misc");
 const Tickets = require("../../models/Tickets");
 const { createTranscript } = require("discord-html-transcripts");
 
@@ -104,7 +104,7 @@ module.exports = async (interaction) => {
       await interaction.deferUpdate({});
 
       // Check if the user has admin permissions
-      if (!isAdminAndCanReplyTickets(member))
+      if (!hasAdminPerms(member))
         throw new Error("Only admins or mods can perform this task");
 
       const closingEmbed = createDynamicEmbed({
